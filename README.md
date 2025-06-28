@@ -13,7 +13,7 @@ NetEngine Editor — это автономная среда разработки
 ### 1. Клонируйте репозиторий
 
 ```bash
-git clone https://github.com/yourusername/netengine-editor.git
+git clone https://github.com/Kaminasta/NetEngine-Editor.git
 cd netengine-editor
 ```
 
