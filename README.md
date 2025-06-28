@@ -1,27 +1,30 @@
 # NetEngine Editor
 
-**A custom game engine and editor built with C# and OpenGL, inspired by Unity's architecture.**
+**Пользовательский игровой движок и редактор, созданный на C# и OpenGL, вдохновлённый архитектурой Unity.**
 
-## Overview
+## Обзор
 
-NetEngine Editor is a standalone game development environment based on the NetEngine framework. It uses an entity-component system with `GameObject` and `Component` patterns, offering a familiar workflow for Unity developers.
+NetEngine Editor — это автономная среда разработки игр, построенная на основе фреймворка NetEngine. Он использует систему сущностей и компонентов (`GameObject`, `Component`), предлагая привычный рабочий процесс для тех, кто знаком с Unity.
 
-## Getting Started
+> Немного о коде: изначально проект создавался как способ разобраться с OpenGL на практике. В результате основной класс движка получился перегруженным и явно требует рефакторинга. Многие фрагменты кода были перенесены из старых версий движка, поэтому местами могут выбиваться из общей архитектурной идеи.
 
-### 1. Clone the repository
+## Как начать
+
+### 1. Клонируйте репозиторий
 
 ```bash
 git clone https://github.com/yourusername/netengine-editor.git
 cd netengine-editor
 ```
 
-### 2. Build the project
-Make sure you have the .NET SDK installed.
-Then run:
+### 2. Соберите проект
+
+Убедитесь, что у вас установлен .NET SDK. Затем выполните в папке проекта:
 
 ```bash
 dotnet build
 ```
 
-## License
-This project is licensed under the MIT License.
+## Лицензия
+
+Этот проект распространяется под лицензией MIT.
