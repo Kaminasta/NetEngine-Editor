@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000" viewBox="0 0 1000 1000">
+  <defs>
+    <style>
+      .background {
+        width: 100%; 
+        height: 100%; 
+        fill: #D0511B; 
+        border-radius: 10px;
+      }
+
+      .cls-1 {
+        fill: #fff;
+      }
+
+      .cls-1, .cls-2 {
+        fill-rule: evenodd;
+      }
+
+      .cls-2 {
+        fill: #D0511B;
+      }
+    </style>
+  </defs>
+  <rect class="background" rx="160" ry="160"/>
+  <path class="cls-1" d="M502.162,808.667L234.943,654.387V345.829L502.162,191.55l267.22,154.279V654.387Z"/>
+  <path class="cls-2" d="M500,698.007L329,599.253V401.745l171-98.753,171,98.753V599.253Z"/>
+  <path class="cls-2" d="M480,1013h40V513H480v500Z"/>
+  <path class="cls-2" d="M500.156,478.359l20,34.641L953.169,263l-20-34.641Z"/>
+  <path class="cls-2" d="M47.156,262.641l20-34.641L500.169,478l-20,34.641Z"/>
+</svg>
