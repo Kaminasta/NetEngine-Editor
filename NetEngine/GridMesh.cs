@@ -3,63 +3,57 @@ using System.Numerics;
 
 namespace NetEngine;
 
-public class GridMesh
+public unsafe static class GridMesh
 {
-    private GL gl;
-    public uint VAO;
-    public uint VBO;
-    public int LineCount;
+    private static GL gl => OpenGL.GL;
+    private static Material Material => Editor.gizmosMaterial;
+    private static uint VAO;
+    private static uint VBO;
+    private static int LineCount;
+    private static int Size = 100;
 
-    private Material material;
-
-    public unsafe GridMesh(Material material, int size = 100)
+    public static void Init()
     {
-        gl = OpenGL.GL;
-
-        this.material = material;
-
         List<float> vertices = new();
 
-        for (int i = -size; i <= size; i++)
+        for (int i = -Size; i <= Size; i++)
         {
             // Линии вдоль Z (по оси X меняется)
             if (i == 0)
             {
                 // Центральная ось Z (ось X = 0) — красная
                 vertices.AddRange([
-                    -size, 0, i, 1f, 0f, 0f,
-                    size, 0, i, 1f, 0f, 0f
+                    -Size, 0, i, 1f, 0f, 0f,
+                    Size, 0, i, 1f, 0f, 0f
                 ]);
             }
-            else
-            {
-                // Обычные линии — серые
-                //vertices.AddRange([
-                //    -size, 0, i, 0.5f, 0.5f, 0.5f,
-                //    size, 0, i, 0.5f, 0.5f, 0.5f
-                //]);
-            }
+            //else
+            //{
+            //    // Обычные линии — серые
+            //    vertices.AddRange([
+            //        -Size, 0, i, 0.5f, 0.5f, 0.5f,
+            //        Size, 0, i, 0.5f, 0.5f, 0.5f
+            //    ]);
+            //}
 
             // Линии вдоль X (по оси Z меняется)
             if (i == 0)
             {
                 // Центральная ось X (ось Z = 0) — синяя
                 vertices.AddRange([
-                    i, 0, -size, 0f, 0f, 1f,
-                    i, 0,  size, 0f, 0f, 1f
+                    i, 0, -Size, 0f, 0f, 1f,
+                    i, 0,  Size, 0f, 0f, 1f
                 ]);
             }
-            else
-            {
-                // Обычные линии — серые
-                //vertices.AddRange([
-                //    i, 0, -size, 0.5f, 0.5f, 0.5f,
-                //    i, 0,  size, 0.5f, 0.5f, 0.5f,
-                //]);
-            }
+            //else
+            //{
+            //    // Обычные линии — серые
+            //    vertices.AddRange([
+            //        i, 0, -Size, 0.5f, 0.5f, 0.5f,
+            //        i, 0,  Size, 0.5f, 0.5f, 0.5f,
+            //    ]);
+            //}
         }
-
-
 
         LineCount = (vertices.Count / 3) / 2;
 
@@ -82,20 +76,37 @@ public class GridMesh
         gl.BindVertexArray(0);
     }
 
-    public unsafe void Render(Matrix4x4 view, Matrix4x4 projection)
+    public unsafe static void Render(Matrix4x4 view, Matrix4x4 projection)
     {
         Matrix4x4 model = Matrix4x4.Identity;
 
-        material.Use();
+        Material.Use();
 
-        material["model"] = model;
-        material["view"] = view;
-        material["projection"] = projection;
+        Material["model"] = model;
+        Material["view"] = view;
+        Material["projection"] = projection;
 
         // Отрисовка линий
         gl.BindVertexArray(VAO);
         gl.DrawArrays(GLEnum.Lines, 0, (uint)(LineCount * 2));
         gl.BindVertexArray(0);
+    }
+
+    public static void Dispose()
+    {
+        if (VBO != 0)
+        {
+            gl.DeleteBuffer(VBO);
+            VBO = 0;
+        }
+
+        if (VAO != 0)
+        {
+            gl.DeleteVertexArray(VAO);
+            VAO = 0;
+        }
+
+        LineCount = 0;
     }
 
 }

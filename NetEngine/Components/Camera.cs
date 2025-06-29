@@ -8,7 +8,7 @@ public class Camera : Behaviour
 {
     [ShowInInspector]
     [Range(1, 179)]
-    public float FieldOfView = 90f;
+    public float FieldOfView = 75f;
 
     [ShowInInspector]
     public float NearPlane = 0.1f;
@@ -24,9 +24,9 @@ public class Camera : Behaviour
     public Matrix4x4 GetViewMatrix()
     {
         return Matrix4x4.CreateLookAt(
-            GameObject.transform.Position,
-            GameObject.transform.Position + GameObject.transform.Front,
-            GameObject.transform.Up);
+            GameObject.Transform.Position,
+            GameObject.Transform.Position + GameObject.Transform.Front,
+            GameObject.Transform.Up);
     }
 
     public Matrix4x4 GetProjectionMatrix()
@@ -42,9 +42,9 @@ public class Camera : Behaviour
     {
         var gl = OpenGL.GL;
 
-        var pos = GameObject.transform.Position;
-        var forward = Vector3.Normalize(GameObject.transform.Front);
-        var up = Vector3.Normalize(GameObject.transform.Up);
+        var pos = GameObject.Transform.Position;
+        var forward = Vector3.Normalize(GameObject.Transform.Front);
+        var up = Vector3.Normalize(GameObject.Transform.Up);
         var right = Vector3.Normalize(Vector3.Cross(forward, up));
 
         float nearHeight = 2 * MathF.Tan(Convert.ToRadians(FieldOfView) / 2) * NearPlane;

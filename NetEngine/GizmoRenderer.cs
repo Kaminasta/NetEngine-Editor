@@ -4,22 +4,26 @@ using System.Numerics;
 
 namespace NetEngine;
 
-public class GizmoRenderer
+public enum GizmoType
 {
-    private GL gl;
-    private Material material;
+    Position,
+    Rotation,
+    Scale
+}
 
-    private uint vao, vbo;
-    private (uint vao, uint vbo, int count) coneX, coneY, coneZ;
-    private (uint vao, uint vbo, int count) cubeX, cubeY, cubeZ;
-    private (uint vao, uint vbo, int count) ringX, ringY, ringZ;
+public static class GizmoRenderer
+{
+    private static GL gl => OpenGL.GL;
+    private static Material material => Editor.gizmosMaterial;
+
+    private static uint vao, vbo;
+    private static (uint vao, uint vbo, int count) coneX, coneY, coneZ;
+    private static (uint vao, uint vbo, int count) cubeX, cubeY, cubeZ;
+    private static (uint vao, uint vbo, int count) ringX, ringY, ringZ;
 
 
-    public GizmoRenderer(Material material)
+    public static void Init()
     {
-        gl = OpenGL.GL;
-        this.material = material;
-
         coneX = GenerateCone(0.05f, 0.2f, 16, new Vector3(1f, 0f, 0f)); // красный
         coneY = GenerateCone(0.05f, 0.2f, 16, new Vector3(0f, 1f, 0f)); // зелёный
         coneZ = GenerateCone(0.05f, 0.2f, 16, new Vector3(0f, 0f, 1f)); // синий
@@ -31,10 +35,9 @@ public class GizmoRenderer
         ringX = GenerateCircle(0.6f, 32, new Vector3(1f, 0f, 0f));
         ringY = GenerateCircle(0.6f, 32, new Vector3(0f, 1f, 0f));
         ringZ = GenerateCircle(0.6f, 32, new Vector3(0f, 0f, 1f));
-
     }
 
-    private unsafe (uint vao, uint vbo, int vertexCount) GenerateCone(float radius, float height, int segments, Vector3 color)
+    private unsafe static (uint vao, uint vbo, int vertexCount) GenerateCone(float radius, float height, int segments, Vector3 color)
     {
         List<float> vertices = new();
 
@@ -72,29 +75,29 @@ public class GizmoRenderer
         return (vao, vbo, vertices.Count / 6);
     }
 
-    private unsafe (uint vao, uint vbo, int count) GenerateCube(Vector3 color)
+    private unsafe static (uint vao, uint vbo, int count) GenerateCube(Vector3 color)
     {
         float s = 0.05f;
         float[] vertices = {
-        // позиция        // цвет
-        -s,-s,-s, color.X, color.Y, color.Z,
-         s,-s,-s, color.X, color.Y, color.Z,
-         s, s,-s, color.X, color.Y, color.Z,
-        -s, s,-s, color.X, color.Y, color.Z,
-        -s,-s, s, color.X, color.Y, color.Z,
-         s,-s, s, color.X, color.Y, color.Z,
-         s, s, s, color.X, color.Y, color.Z,
-        -s, s, s, color.X, color.Y, color.Z,
-    };
+            // позиция        // цвет
+            -s,-s,-s, color.X, color.Y, color.Z,
+             s,-s,-s, color.X, color.Y, color.Z,
+             s, s,-s, color.X, color.Y, color.Z,
+            -s, s,-s, color.X, color.Y, color.Z,
+            -s,-s, s, color.X, color.Y, color.Z,
+             s,-s, s, color.X, color.Y, color.Z,
+             s, s, s, color.X, color.Y, color.Z,
+            -s, s, s, color.X, color.Y, color.Z,
+        };
 
         uint[] indices = {
-        0,1,2, 2,3,0,
-        4,5,6, 6,7,4,
-        0,1,5, 5,4,0,
-        2,3,7, 7,6,2,
-        0,3,7, 7,4,0,
-        1,2,6, 6,5,1,
-    };
+            0,1,2, 2,3,0,
+            4,5,6, 6,7,4,
+            0,1,5, 5,4,0,
+            2,3,7, 7,6,2,
+            0,3,7, 7,4,0,
+            1,2,6, 6,5,1,
+        };
 
         uint vao = gl.GenVertexArray();
         uint vbo = gl.GenBuffer();
@@ -123,7 +126,7 @@ public class GizmoRenderer
         return (vao, vbo, indices.Length);
     }
 
-    private unsafe (uint vao, uint vbo, int count) GenerateCircle(float radius, int segments, Vector3 color)
+    private unsafe static (uint vao, uint vbo, int count) GenerateCircle(float radius, int segments, Vector3 color)
     {
         List<float> verts = new();
         for (int i = 0; i <= segments; i++)
@@ -156,14 +159,7 @@ public class GizmoRenderer
         return (vao, vbo, verts.Count / 6);
     }
 
-    public enum GizmoType
-    { 
-        Position,
-        Rotation,
-        Scale
-    }
-
-    public unsafe void RenderGizmo(GizmoType gizmoType, Transform transform, Matrix4x4 view, Matrix4x4 projection, Vector3 cameraPosition)
+    public unsafe static void RenderGizmo(GizmoType gizmoType, Transform transform, Matrix4x4 view, Matrix4x4 projection, Vector3 cameraPosition)
     {
         material.Use();
 
@@ -187,7 +183,7 @@ public class GizmoRenderer
         }
     }
 
-    private unsafe void RenderPositionGizmo(Transform transform, float scale)
+    private unsafe static void RenderPositionGizmo(Transform transform, float scale)
     {
         float[] lineVerts = new float[(3 * 2) * 6];
         Vector3[] dirs = { Vector3.UnitX, Vector3.UnitY, Vector3.UnitZ };
@@ -232,7 +228,7 @@ public class GizmoRenderer
         DrawCone(transform, Vector3.UnitZ, coneZ, scale);
     }
 
-    private unsafe void RenderRotationGizmo(Transform transform, float scale)
+    private unsafe static void RenderRotationGizmo(Transform transform, float scale)
     {
         gl.LineWidth(3.0f);  // Толще линии для колец
         DrawCircle(transform, Vector3.UnitX, ringX, scale);
@@ -242,7 +238,7 @@ public class GizmoRenderer
     }
 
 
-    private unsafe void DrawCone(Transform transform, Vector3 direction, (uint vao, uint vbo, int count) cone, float scale)
+    private unsafe static void DrawCone(Transform transform, Vector3 direction, (uint vao, uint vbo, int count) cone, float scale)
     {
         Vector3 endPos = transform.Position + Vector3.Transform(direction * 0.5f * scale, transform.Rotation);
 
@@ -271,7 +267,7 @@ public class GizmoRenderer
         gl.BindVertexArray(0);
     }
 
-    private unsafe void DrawCircle(Transform transform, Vector3 axis, (uint vao, uint vbo, int count) circle, float scale)
+    private unsafe static void DrawCircle(Transform transform, Vector3 axis, (uint vao, uint vbo, int count) circle, float scale)
     {
         Quaternion rot = Quaternion.Identity;
         if (axis == Vector3.UnitX)
@@ -293,4 +289,28 @@ public class GizmoRenderer
         gl.DrawArrays(GLEnum.LineStrip, 0, (uint)circle.count);
         gl.BindVertexArray(0);
     }
+
+    public static void Dispose()
+    {
+        void Delete((uint vao, uint vbo, int count) obj)
+        {
+            if (obj.vbo != 0)
+                gl.DeleteBuffer(obj.vbo);
+            if (obj.vao != 0)
+                gl.DeleteVertexArray(obj.vao);
+        }
+
+        Delete(coneX);
+        Delete(coneY);
+        Delete(coneZ);
+
+        Delete(cubeX);
+        Delete(cubeY);
+        Delete(cubeZ);
+
+        Delete(ringX);
+        Delete(ringY);
+        Delete(ringZ);
+    }
+
 }

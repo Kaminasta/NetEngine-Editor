@@ -15,7 +15,7 @@ public class GameObject : Object
     public string Layer;
     public bool IsActive = true;
 
-    public Transform transform;
+    public Transform Transform;
 
     public GameObject(string name) : this() 
     {
@@ -26,11 +26,11 @@ public class GameObject : Object
     {
         NetEngine.Console.EditorLog("[GameObject] Создан экземпляр GameObject");
 
-        if (transform == null)
-            transform = new Transform(this);
+        if (Transform == null)
+            Transform = new Transform(this);
 
         if (!_components.Any(c => c is Transform))
-            _components.Add(transform);
+            _components.Add(Transform);
 
         try
         {
@@ -48,17 +48,17 @@ public class GameObject : Object
     {
         NetEngine.Console.EditorLog("[GameObject - OnDeserialized] Начинается десериализация GameObject");
 
-        int removedCount = _components.RemoveAll(c => c is Transform && !ReferenceEquals(c, transform));
+        int removedCount = _components.RemoveAll(c => c is Transform && !ReferenceEquals(c, Transform));
         if (removedCount > 0)
             NetEngine.Console.EditorWarning($"[GameObject - OnDeserialized] Удалено {removedCount} лишних компонентов Transform");
 
-        if (transform != null)
+        if (Transform != null)
         {
-            transform.GameObject = this;
+            Transform.GameObject = this;
 
-            if (!_components.Contains(transform))
+            if (!_components.Contains(Transform))
             {
-                _components.Add(transform);
+                _components.Add(Transform);
                 NetEngine.Console.EditorWarning("[GameObject - OnDeserialized] Transform был отсутствует в списке компонентов и добавлен");
             }
         }

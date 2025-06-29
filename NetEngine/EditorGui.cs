@@ -32,35 +32,35 @@ public enum WindowTheme
     Light
 }
 
-public class EditorGui
+public static class EditorGui
 {
-    public Object? selectedObject;
+    public static Object? selectedObject;
 
-    public bool HierarchyOpened = true;
-    public bool InspectorOpened = true;
-    public bool BrowserOpened = true;
-    public bool SceneViewportOpened = true;
-    public bool GameViewportOpened = true;
-    public bool ConsoleOpened = true;
-    public bool StyleEditorOpened = false;
+    public static bool HierarchyOpened = true;
+    public static bool InspectorOpened = true;
+    public static bool BrowserOpened = true;
+    public static bool SceneViewportOpened = true;
+    public static bool GameViewportOpened = true;
+    public static bool ConsoleOpened = true;
+    public static bool StyleEditorOpened = false;
 
-    public Vector2 SceneViewportSize { get; private set; }
-    public Vector2 GameViewportSize { get; private set; }
+    public static Vector2 SceneViewportSize { get; private set; }
+    public static Vector2 GameViewportSize { get; private set; }
 
-    public Vector2 SceneViewportPosition { get; private set; }
-    public Vector2 GameViewportPosition { get; private set; }
+    public static Vector2 SceneViewportPosition { get; private set; }
+    public static Vector2 GameViewportPosition { get; private set; }
 
-    public float SceneViewportSensitivity = 20f;
+    public static float SceneViewportSensitivity = 20f;
 
-    public LayoutType CurrentLayout { get; private set; }
-    public EditorWindowType FocusedWindow { get; private set; } = EditorWindowType.None;
-    public WindowTheme CurrentTheme { get; private set; } = WindowTheme.Dark;
+    public static LayoutType CurrentLayout { get; private set; }
+    public static EditorWindowType FocusedWindow { get; private set; } = EditorWindowType.None;
+    public static WindowTheme CurrentTheme { get; private set; } = WindowTheme.Dark;
 
-    public ImGuiIOPtr io;
+    public static ImGuiIOPtr io;
 
-    public Action<GameObject> OnHierarchyDoubleClickAction;
+    public static Action<GameObject> OnHierarchyDoubleClickAction;
 
-    public EditorGui()
+    public static void Init()
     {
         LoadLayout(LayoutType.Default);
 
@@ -73,7 +73,7 @@ public class EditorGui
         ChangeTheme(CurrentTheme);
     }
 
-    public void ChangeTheme(WindowTheme theme)
+    public static void ChangeTheme(WindowTheme theme)
     {
         CurrentTheme = theme;
 
@@ -161,7 +161,7 @@ public class EditorGui
         else ImGui.StyleColorsLight();
     }
 
-    public void LoadLayout(LayoutType layoutType)
+    public static void LoadLayout(LayoutType layoutType)
     {
         CurrentLayout = layoutType;
 
@@ -177,7 +177,7 @@ public class EditorGui
         ImGui.LoadIniSettingsFromMemory(layoutString);
     }
 
-    public void KeyboardHandle()
+    public static void KeyboardHandle()
     {
         bool isСontrol = ImGui.IsKeyDown(ImGuiKey.LeftCtrl) || ImGui.IsKeyDown(ImGuiKey.RightCtrl);
 
@@ -202,7 +202,7 @@ public class EditorGui
             Project.Save();
     }
 
-    public void ShowHierarchyWindow()
+    public static void ShowHierarchyWindow()
     {
         if (!HierarchyOpened)
             return;
@@ -255,7 +255,7 @@ public class EditorGui
     }
 
 
-    public void ShowGameViewportWindow(FrameBuffer frameBuffer)
+    public static void ShowGameViewportWindow()
     {
         if (!GameViewportOpened)
             return;
@@ -274,7 +274,7 @@ public class EditorGui
         GameViewportPosition = ImGui.GetCursorScreenPos();
 
         ImGui.Image(
-            (nint)frameBuffer.FrameTexture,
+            (nint)Editor.GameBuffer.FrameTexture,
             GameViewportSize,
             new Vector2(0, 1),
             new Vector2(1, 0)
@@ -285,7 +285,7 @@ public class EditorGui
         ImGui.PopID();
     }
 
-    public void ShowSceneViewportWindow(FrameBuffer frameBuffer)
+    public static void ShowSceneViewportWindow()
     {
         if (!SceneViewportOpened)
             return;
@@ -304,7 +304,7 @@ public class EditorGui
         SceneViewportPosition = ImGui.GetCursorScreenPos();
 
         ImGui.Image(
-            (nint)frameBuffer.FrameTexture,
+            (nint)Editor.SceneBuffer.FrameTexture,
             SceneViewportSize,
             new Vector2(0, 1),
             new Vector2(1, 0)
@@ -314,79 +314,79 @@ public class EditorGui
         ImGui.PopID();
     }
 
-    public class BrowserItem
-    {
-        public string Path;
-    }
+    //public class BrowserItem
+    //{
+    //    public string Path;
+    //}
 
-    public class FolderItem : BrowserItem
-    {
-        public List<BrowserItem> Items = new();
-    }
+    //public class FolderItem : BrowserItem
+    //{
+    //    public List<BrowserItem> Items = new();
+    //}
 
-    public class FileItem : BrowserItem
-    {
-        // Можно добавить тип, размер, расширение и т.п.
-    }
-
-
-
-    private string selectedFolder = "Assets";
-    private FolderItem rootFolder = new FolderItem
-    {
-        Path = "Assets",
-        Items = new List<BrowserItem>
-        {
-            new FolderItem
-            {
-                Path = "Assets/Scenes",
-                Items = new List<BrowserItem>()
-            },
-            new FolderItem
-            {
-                Path = "Assets/SceneTemplates",
-                Items = new List<BrowserItem>()
-            },
-            new FileItem { Path = "Assets/New Shader" },
-            new FileItem { Path = "Assets/NewMonoBehaviour" },
-            new FileItem { Path = "Assets/NewSurfaceShader" },
-        }
-    };
-
-    private void DrawFolder(FolderItem folder)
-    {
-        string folderName = System.IO.Path.GetFileName(folder.Path);
-        bool open = ImGui.TreeNodeEx(folderName, ImGuiTreeNodeFlags.DefaultOpen);
-
-        if (ImGui.IsItemClicked())
-        {
-            selectedFolder = folder.Path;
-        }
-
-        if (open)
-        {
-            foreach (var item in folder.Items)
-            {
-                if (item is FolderItem subfolder)
-                {
-                    DrawFolder(subfolder); // Рекурсия
-                }
-                else if (item is FileItem file)
-                {
-                    string fileName = System.IO.Path.GetFileName(file.Path);
-                    if (ImGui.Selectable(fileName, selectedFolder == file.Path))
-                    {
-                        selectedFolder = file.Path;
-                    }
-                }
-            }
-
-            ImGui.TreePop();
-        }
-    }
+    //public class FileItem : BrowserItem
+    //{
+    //    // Можно добавить тип, размер, расширение и т.п.
+    //}
 
 
-    public void ShowBrowserWindow()
+
+    //private static string selectedFolder = "Assets";
+    //private static FolderItem rootFolder = new FolderItem
+    //{
+    //    Path = "Assets",
+    //    Items = new List<BrowserItem>
+    //    {
+    //        new FolderItem
+    //        {
+    //            Path = "Assets/Scenes",
+    //            Items = new List<BrowserItem>()
+    //        },
+    //        new FolderItem
+    //        {
+    //            Path = "Assets/SceneTemplates",
+    //            Items = new List<BrowserItem>()
+    //        },
+    //        new FileItem { Path = "Assets/New Shader" },
+    //        new FileItem { Path = "Assets/NewMonoBehaviour" },
+    //        new FileItem { Path = "Assets/NewSurfaceShader" },
+    //    }
+    //};
+
+    //private void DrawFolder(FolderItem folder)
+    //{
+    //    string folderName = System.IO.Path.GetFileName(folder.Path);
+    //    bool open = ImGui.TreeNodeEx(folderName, ImGuiTreeNodeFlags.DefaultOpen);
+
+    //    if (ImGui.IsItemClicked())
+    //    {
+    //        selectedFolder = folder.Path;
+    //    }
+
+    //    if (open)
+    //    {
+    //        foreach (var item in folder.Items)
+    //        {
+    //            if (item is FolderItem subfolder)
+    //            {
+    //                DrawFolder(subfolder); // Рекурсия
+    //            }
+    //            else if (item is FileItem file)
+    //            {
+    //                string fileName = System.IO.Path.GetFileName(file.Path);
+    //                if (ImGui.Selectable(fileName, selectedFolder == file.Path))
+    //                {
+    //                    selectedFolder = file.Path;
+    //                }
+    //            }
+    //        }
+
+    //        ImGui.TreePop();
+    //    }
+    //}
+
+
+    public static void ShowBrowserWindow()
     {
         if (!BrowserOpened)
             return;
@@ -397,71 +397,71 @@ public class EditorGui
         if (ImGui.IsWindowFocused())
             FocusedWindow = EditorWindowType.Browser;
 
-        if (ImGui.BeginTable("BrowserSplitTable", 2))
-        {
-            // Устанавливаем ширину столбцов в долях доступного размера
-            ImGui.TableSetupColumn("Tree", ImGuiTableColumnFlags.WidthStretch, 0.3f);
-            ImGui.TableSetupColumn("Content", ImGuiTableColumnFlags.WidthStretch, 0.7f);
+        //if (ImGui.BeginTable("BrowserSplitTable", 2))
+        //{
+        //    // Устанавливаем ширину столбцов в долях доступного размера
+        //    ImGui.TableSetupColumn("Tree", ImGuiTableColumnFlags.WidthStretch, 0.3f);
+        //    ImGui.TableSetupColumn("Content", ImGuiTableColumnFlags.WidthStretch, 0.7f);
 
-            ImGui.TableNextRow();
+        //    ImGui.TableNextRow();
 
-            // Левая колонка — дерево
-            ImGui.TableSetColumnIndex(0);
-            DrawFolder(rootFolder);
+        //    // Левая колонка — дерево
+        //    ImGui.TableSetColumnIndex(0);
+        //    DrawFolder(rootFolder);
 
-            // Правая колонка — содержимое
-            ImGui.TableSetColumnIndex(1);
-            var currentFolder = FindFolderByPath(rootFolder, selectedFolder);
-            if (currentFolder != null)
-            {
-                int columns = 4;
-                if (ImGui.BeginTable("ContentTable", columns, ImGuiTableFlags.SizingStretchSame))
-                {
-                    int count = 0;
-                    foreach (var item in currentFolder.Items)
-                    {
-                        if (count % columns == 0)
-                            ImGui.TableNextRow();
+        //    // Правая колонка — содержимое
+        //    ImGui.TableSetColumnIndex(1);
+        //    var currentFolder = FindFolderByPath(rootFolder, selectedFolder);
+        //    if (currentFolder != null)
+        //    {
+        //        int columns = 4;
+        //        if (ImGui.BeginTable("ContentTable", columns, ImGuiTableFlags.SizingStretchSame))
+        //        {
+        //            int count = 0;
+        //            foreach (var item in currentFolder.Items)
+        //            {
+        //                if (count % columns == 0)
+        //                    ImGui.TableNextRow();
 
-                        ImGui.TableSetColumnIndex(count % columns);
+        //                ImGui.TableSetColumnIndex(count % columns);
 
-                        string name = System.IO.Path.GetFileName(item.Path);
-                        if (ImGui.Button(name, new System.Numerics.Vector2(100, 80)))
-                        {
-                            // Логика по нажатию
-                        }
+        //                string name = System.IO.Path.GetFileName(item.Path);
+        //                if (ImGui.Button(name, new System.Numerics.Vector2(100, 80)))
+        //                {
+        //                    // Логика по нажатию
+        //                }
 
-                        count++;
-                    }
-                    ImGui.EndTable();
-                }
-            }
+        //                count++;
+        //            }
+        //            ImGui.EndTable();
+        //        }
+        //    }
 
-            ImGui.EndTable();
-        }
+        //    ImGui.EndTable();
+        //}
 
         ImGui.End();
         ImGui.PopID();
     }
 
 
-    private FolderItem? FindFolderByPath(FolderItem folder, string path)
-    {
-        if (folder.Path == path)
-            return folder;
+    //private FolderItem? FindFolderByPath(FolderItem folder, string path)
+    //{
+    //    if (folder.Path == path)
+    //        return folder;
 
-        foreach (var item in folder.Items)
-        {
-            if (item is FolderItem subfolder)
-            {
-                var result = FindFolderByPath(subfolder, path);
-                if (result != null)
-                    return result;
-            }
-        }
+    //    foreach (var item in folder.Items)
+    //    {
+    //        if (item is FolderItem subfolder)
+    //        {
+    //            var result = FindFolderByPath(subfolder, path);
+    //            if (result != null)
+    //                return result;
+    //        }
+    //    }
 
-        return null;
-    }
+    //    return null;
+    //}
 
 
     private static bool _autoScroll = true;
@@ -470,7 +470,7 @@ public class EditorGui
     private static bool _showErrors = true;
     private static bool _showEditorMsg = true;
 
-    public void ShowConsoleWindow()
+    public static void ShowConsoleWindow()
     {
         if (!ConsoleOpened)
             return;
@@ -562,7 +562,7 @@ public class EditorGui
     }
 
 
-    public void ShowStyleEditor()
+    public static void ShowStyleEditor()
     {
         if (!StyleEditorOpened)
             return;
@@ -579,7 +579,7 @@ public class EditorGui
         ImGui.PopID();
     }
 
-    public void ShowInspectorWindow()
+    public static void ShowInspectorWindow()
     {   
         if (!InspectorOpened)
             return;
@@ -750,7 +750,7 @@ public class EditorGui
 
     private const float stepMovement = 0.05f;
 
-    private void DrawFieldEditor(FieldInfo field, ref object value)
+    private static void DrawFieldEditor(FieldInfo field, ref object value)
     {
         RangeAttribute range = field?.GetCustomAttribute<RangeAttribute>();
 
@@ -839,5 +839,137 @@ public class EditorGui
         else ImGui.Text($"Unsupported type: {type.Name}");
 
         ImGui.PopItemWidth();
+    }
+
+    public static void RenderImGui()
+    {
+        var viewport = ImGui.GetMainViewport();
+        ImGui.SetNextWindowViewport(viewport.ID);
+
+        float menuBarHeight = 0.0f;
+        if (ImGui.BeginMainMenuBar())
+        {
+            if (ImGui.BeginMenu("File"))
+            {
+                if (ImGui.MenuItem("New project", "Ctrl + N"))
+                    Project.New();
+                if (ImGui.MenuItem("Open project", "Ctrl + O"))
+                    Project.Open();
+                if (ImGui.MenuItem("Save project", "Ctrl + S"))
+                    Project.Save();
+                ImGui.Separator();
+                if (ImGui.MenuItem("Exit"))
+                {
+
+                }
+                ImGui.EndMenu();
+            }
+            if (ImGui.BeginMenu("Edit"))
+            {
+                ImGui.EndMenu();
+            }
+            if (ImGui.BeginMenu("GameObject"))
+            {
+                bool isEnabled = EditorGui.selectedObject is GameObject && EditorGui.selectedObject != null;
+                if (ImGui.MenuItem("Move to camera transform", isEnabled))
+                {
+                    if (EditorGui.selectedObject is GameObject selectedGameObject)
+                    {
+                        selectedGameObject.Transform.Position = EditorCamera.Camera.Transform.Position;
+                        selectedGameObject.Transform.Rotation = EditorCamera.Camera.Transform.Rotation;
+                    }
+                }
+                ImGui.EndMenu();
+            }
+            if (ImGui.BeginMenu("Component"))
+            {
+                ImGui.EndMenu();
+            }
+            if (ImGui.BeginMenu("Window"))
+            {
+                if (ImGui.BeginMenu("Layouts"))
+                {
+                    if (ImGui.MenuItem("Copy this Layout to clipboard"))
+                        ImGui.SetClipboardText(ImGui.SaveIniSettingsToMemory());
+
+                    ImGui.Separator();
+
+                    if (ImGui.MenuItem("Default", null, EditorGui.CurrentLayout == LayoutType.Default))
+                        EditorGui.LoadLayout(LayoutType.Default);
+                    if (ImGui.MenuItem("Tall", null, EditorGui.CurrentLayout == LayoutType.Tall))
+                        EditorGui.LoadLayout(LayoutType.Tall);
+                    if (ImGui.MenuItem("Wide", null, EditorGui.CurrentLayout == LayoutType.Wide))
+                        EditorGui.LoadLayout(LayoutType.Wide);
+                    if (ImGui.MenuItem("2 by 3", null, EditorGui.CurrentLayout == LayoutType.TwoByThree))
+                        EditorGui.LoadLayout(LayoutType.TwoByThree);
+
+                    ImGui.EndMenu();
+                }
+                ImGui.Separator();
+                if (ImGui.BeginMenu("General"))
+                {
+                    ImGui.MenuItem("Hierarchy", "Ctrl + 1", ref EditorGui.HierarchyOpened);
+                    ImGui.MenuItem("Inspector", "Ctrl + 2", ref EditorGui.InspectorOpened);
+                    ImGui.MenuItem("Browser", "Ctrl + 3", ref EditorGui.BrowserOpened);
+                    ImGui.MenuItem("Scene", "Ctrl + 4", ref EditorGui.SceneViewportOpened);
+                    ImGui.MenuItem("Game", "Ctrl + 5", ref EditorGui.GameViewportOpened);
+                    ImGui.MenuItem("Console", "Ctrl + 6", ref EditorGui.ConsoleOpened);
+                    ImGui.EndMenu();
+                }
+                if (ImGui.BeginMenu("ImGui"))
+                {
+                    ImGui.MenuItem("Style Editor", null, ref EditorGui.StyleEditorOpened);
+                    ImGui.EndMenu();
+                }
+                if (ImGui.BeginMenu("Window Theme"))
+                {
+                    if (ImGui.MenuItem("Dark", null, EditorGui.CurrentTheme == WindowTheme.Dark))
+                        EditorGui.ChangeTheme(WindowTheme.Dark);
+                    if (ImGui.MenuItem("Light", null, EditorGui.CurrentTheme == WindowTheme.Light))
+                        EditorGui.ChangeTheme(WindowTheme.Light);
+                    ImGui.EndMenu();
+                }
+
+                ImGui.EndMenu();
+            }
+            menuBarHeight = ImGui.GetWindowSize().Y;
+
+            string fpsText = $"FPS: {FpsCounter.Fps:F0}";
+            float textWidth = ImGui.CalcTextSize(fpsText).X;
+
+            ImGui.SameLine(ImGui.GetWindowWidth() - textWidth - 10);
+            ImGui.Text(fpsText);
+
+            menuBarHeight = ImGui.GetWindowSize().Y;
+            ImGui.EndMainMenuBar();
+        }
+
+        ImGui.SetNextWindowPos(new Vector2(viewport.Pos.X, viewport.Pos.Y + menuBarHeight));
+        ImGui.SetNextWindowSize(new Vector2(viewport.Size.X, viewport.Size.Y - menuBarHeight));
+
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar |
+                                        ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
+                                        ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoNavFocus |
+                                        ImGuiWindowFlags.NoDocking;
+
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0);
+
+        ImGui.Begin("MainDockspaceWindow", window_flags);
+
+        ImGui.PopStyleVar(2);
+
+        var dockspace_id = ImGui.GetID("MainDockSpace");
+        ImGui.DockSpace(dockspace_id, Vector2.Zero, ImGuiDockNodeFlags.None);
+
+        ShowHierarchyWindow();
+        ShowInspectorWindow();
+        ShowGameViewportWindow();
+        ShowSceneViewportWindow();
+        ShowBrowserWindow();
+        ShowConsoleWindow();
+        ShowStyleEditor();
+
+        ImGui.End();
     }
 }

@@ -31,7 +31,7 @@ public class MeshRenderer : Behaviour
                     var material = materials[i];
                     material.Use();
 
-                    var model = GameObject.transform.GetModelMatrix();
+                    var model = GameObject.Transform.GetModelMatrix();
 
                     material["model"] = model;
                     material["view"] = view;

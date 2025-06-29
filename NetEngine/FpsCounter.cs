@@ -11,7 +11,7 @@ public static class FpsCounter
 
     public static void Update()
     {
-        _accumulatedTime += Time.deltaTime;
+        _accumulatedTime += Time.DeltaTime;
         _frameCount++;
 
         if (_accumulatedTime >= UpdateInterval)
