@@ -1,6 +1,6 @@
 <h4 align="center">
   <br>
-  <img src="https://github.com/user-attachments/assets/ff062b69-a7a1-4048-9a98-812ac31a6d42" alt="logo" height="120px"/>
+  <img src="https://github.com/user-attachments/assets/ff062b69-a7a1-4048-9a98-812ac31a6d42" alt="logo" width="350px"/>
   <br>
   <br>
   <br>
