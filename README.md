@@ -9,6 +9,7 @@
   <br>
   <img src="https://img.shields.io/badge/.NET-8.0-512BD4" alt=".NET 8.0" />
   <img src="https://img.shields.io/badge/Language-C%23-239120" alt="Language" />
+  <img src="https://img.shields.io/badge/Version-0.1.1-ef500d" alt="Version" />
   <br>
 </h4>
 
