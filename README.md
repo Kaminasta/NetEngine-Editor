@@ -1,5 +1,5 @@
 <h4 align="center">
-  <img src="https://github.com/user-attachments/assets/ff062b69-a7a1-4048-9a98-812ac31a6d42" alt="logo" height="150px"/>
+  <img src="https://github.com/user-attachments/assets/ff062b69-a7a1-4048-9a98-812ac31a6d42" alt="logo" height="120px"/>
   <br>
   <br>
   Пользовательский игровой движок и редактор, созданный на C# и OpenGL, вдохновлённый архитектурой Unity.
