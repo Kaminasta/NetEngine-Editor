@@ -1,19 +1,13 @@
-<h1 align="center">
-  <br>
-    <img src="https://github.com/user-attachments/assets/5ac8cede-bab1-466b-8154-cc6d298ddbdb" alt="logo" width="180" />
-  <br>
-  <br>
-  NetEngine Editor
-  <br>
-</h1>
-
 <h4 align="center">
+  <img src="https://github.com/user-attachments/assets/ff062b69-a7a1-4048-9a98-812ac31a6d42" alt="logo" height="150px"/>
+  <br>
+  <br>
   Пользовательский игровой движок и редактор, созданный на C# и OpenGL, вдохновлённый архитектурой Unity.
   <br>
   <br>
   <img src="https://img.shields.io/badge/.NET-8.0-512BD4" alt=".NET 8.0" />
   <img src="https://img.shields.io/badge/Language-C%23-239120" alt="Language" />
-</h2>
+</h4>
 
 ![image](https://github.com/user-attachments/assets/3e3994fd-1e6a-4e18-b143-7b64c711f95a)
 
