@@ -41,8 +41,6 @@ cd NetEngine-Editor
 ```
 
 ### 3. Соберите проект
-Выполните в папке проекта
-
 ```bash
 dotnet build
 ```
