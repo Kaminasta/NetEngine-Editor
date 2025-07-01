@@ -10,6 +10,9 @@
   <img src="https://img.shields.io/badge/.NET-8.0-512BD4" alt=".NET 8.0" />
   <img src="https://img.shields.io/badge/Language-C%23-239120" alt="Language" />
   <img src="https://img.shields.io/badge/Version-0.1.1-ef500d" alt="Version" />
+  <img src="https://img.shields.io/badge/OpenGL-4.6-4386B5" alt="OpenGL" />
+<!--   <img src="https://img.shields.io/badge/Vulkan-1.3-A41E22" alt="Vulkan" />
+  <img src="https://img.shields.io/badge/DirectX-9--12-80BA01" alt="DirectX" /> -->
   <br>
 </h4>
 
